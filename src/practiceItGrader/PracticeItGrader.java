@@ -29,8 +29,8 @@ public class PracticeItGrader {
 	private static List<String> assignments;
 
 	public static void main(String[] args) throws IOException {
-		
-        CommandLine cmd = getCommandlineOptions(args);
+
+		CommandLine cmd = getCommandlineOptions(args);
 
 		String pifileName = cmd.getOptionValue("practiceItCsv");
 		String assignmentName = cmd.getOptionValue("assignmentCsv");
@@ -49,29 +49,31 @@ public class PracticeItGrader {
 	private static CommandLine getCommandlineOptions(String[] args) {
 		Options options = new Options();
 
-        Option pifileNameOption = new Option("p", "practiceItCsv", true, "practiceit full course exported CSV file path");
-        pifileNameOption.setRequired(true);
-        options.addOption(pifileNameOption);
+		Option pifileNameOption = new Option("p", "practiceItCsv", true,
+				"practiceit full course exported CSV file path");
+		pifileNameOption.setRequired(true);
+		options.addOption(pifileNameOption);
 
-        Option assignmentNameOption = new Option("a", "assignmentCsv", true, "assignment with problem names CSV file path");
-        assignmentNameOption.setRequired(true);
-        options.addOption(assignmentNameOption);
+		Option assignmentNameOption = new Option("a", "assignmentCsv", true,
+				"assignment with problem names CSV file path");
+		assignmentNameOption.setRequired(true);
+		options.addOption(assignmentNameOption);
 
-        Option outputFileOption = new Option("o", "outputCsv", true, "student grades output CSV file path");
-        outputFileOption.setRequired(true);
-        options.addOption(outputFileOption);
+		Option outputFileOption = new Option("o", "outputCsv", true, "student grades output CSV file path");
+		outputFileOption.setRequired(true);
+		options.addOption(outputFileOption);
 
-        CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd = null;
+		CommandLineParser parser = new DefaultParser();
+		HelpFormatter formatter = new HelpFormatter();
+		CommandLine cmd = null;
 
-        try {
-            cmd = parser.parse(options, args);
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            formatter.printHelp("grader", options);
-            System.exit(1);
-        }
+		try {
+			cmd = parser.parse(options, args);
+		} catch (ParseException e) {
+			System.out.println(e.getMessage());
+			formatter.printHelp("grader", options);
+			System.exit(1);
+		}
 		return cmd;
 	}
 
@@ -118,11 +120,11 @@ public class PracticeItGrader {
 	private static void writeOutGradeCsv(String fileName) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileName));
 
-				CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("LastName", "FirstName",
+				CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("FirstName", "LastName",
 						"NumCorrect", "NumIncorrect", "NumAttempted"));) {
 			System.out.println("Outputting file: " + fileName);
 			for (Object student : students.values()) {
-				csvPrinter.printRecord(((Student) student).lastName(), ((Student) student).firstName(),
+				csvPrinter.printRecord(((Student) student).firstName(), ((Student) student).lastName(),
 						((Student) student).numCorrect(), ((Student) student).numIncorrect(),
 						((Student) student).numAttempted());
 			}
