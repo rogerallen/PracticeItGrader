@@ -1,5 +1,12 @@
 package practiceItGrader;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 // https://www.callicoder.com/java-read-write-csv-file-apache-commons-csv/
 // commons-csv 
 import org.apache.commons.csv.CSVFormat;
@@ -22,9 +29,12 @@ public class PracticeItGrader {
 	private static List<String> assignments;
 
 	public static void main(String[] args) throws IOException {
-		String pifileName = args[0];
-		String assignmentName = args[1];
-		String outfileName = args[2];
+		
+        CommandLine cmd = getCommandlineOptions(args);
+
+		String pifileName = cmd.getOptionValue("practiceItCsv");
+		String assignmentName = cmd.getOptionValue("assignmentCsv");
+		String outfileName = cmd.getOptionValue("outputCsv");
 
 		students = new HashMap<String, Student>();
 		assignments = new ArrayList<String>();
@@ -34,6 +44,35 @@ public class PracticeItGrader {
 		gradeAssignment();
 		writeOutGradeCsv(outfileName);
 
+	}
+
+	private static CommandLine getCommandlineOptions(String[] args) {
+		Options options = new Options();
+
+        Option pifileNameOption = new Option("p", "practiceItCsv", true, "practiceit full course exported CSV file path");
+        pifileNameOption.setRequired(true);
+        options.addOption(pifileNameOption);
+
+        Option assignmentNameOption = new Option("a", "assignmentCsv", true, "assignment with problem names CSV file path");
+        assignmentNameOption.setRequired(true);
+        options.addOption(assignmentNameOption);
+
+        Option outputFileOption = new Option("o", "outputCsv", true, "student grades output CSV file path");
+        outputFileOption.setRequired(true);
+        options.addOption(outputFileOption);
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd = null;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("grader", options);
+            System.exit(1);
+        }
+		return cmd;
 	}
 
 	private static void gradeAssignment() {
