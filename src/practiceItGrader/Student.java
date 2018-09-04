@@ -64,6 +64,10 @@ public class Student {
 		return numAttempted;
 	}
 
+	public String userName() {
+		return userName;
+	}
+	
 	public String lastName() {
 		return lastName;
 	}

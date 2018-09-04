@@ -4,7 +4,7 @@ Code to help grade https://practiceit.cs.washington.edu/ student results.
 
 ## Usage
 
-1. Download Full results for your Course & Category (Select 'include attempts') from https://practiceit.cs.washington.edu/teacher/student-results 
+1. Download Full results for your Course & Category (Select 'include attempts') from https://practiceit.cs.washington.edu/teacher/student-results
 
 2. Create an assignments file with one line per problem.  These entries must match the "Problem" column from step 1. E.g.
 
@@ -22,11 +22,14 @@ The `output.csv` file will have a format like this:
 
 ```
 LastName,FirstName,NumCorrect,NumIncorrect,NumAttempted
-Abel,Zed,3,5,3
+Abel,Zed,3,5,8
 Baker,Aleph,4,4,4
 Charlie,Parker,4,4,4
 Duck,Bill,8,0,8
 ```
+
+You may optionally add `-i ignoredStudents.csv` to ignore some dropped students or instructor userNames listed in the practice-it data.
+
 ## Building
 
 I just used Eclipse and added the [commons-cli (v1.4)](https://www.apache.org/dist/commons/cli/binaries/) and [commons-csv (v1.5)](https://www.apache.org/dist/commons/csv/binaries/) JARs as Referenced Libraries.

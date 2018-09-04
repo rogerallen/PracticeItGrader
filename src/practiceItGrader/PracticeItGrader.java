@@ -7,8 +7,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-// https://www.callicoder.com/java-read-write-csv-file-apache-commons-csv/
-// commons-csv 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -26,6 +24,7 @@ import java.util.List;
 public class PracticeItGrader {
 
 	private static HashMap<String, Student> students;
+	private static List<String> studentsToIgnore;
 	private static List<String> assignments;
 
 	public static void main(String[] args) throws IOException {
@@ -34,13 +33,16 @@ public class PracticeItGrader {
 
 		String pifileName = cmd.getOptionValue("practiceItCsv");
 		String assignmentName = cmd.getOptionValue("assignmentCsv");
+		String ignoreName = cmd.getOptionValue("ignoreCsv");
 		String outfileName = cmd.getOptionValue("outputCsv");
 
 		students = new HashMap<String, Student>();
+		studentsToIgnore = new ArrayList<String>();
 		assignments = new ArrayList<String>();
 
 		readInPracticeItCsv(pifileName);
 		readInAssignmentCsv(assignmentName);
+		readInIgnoreCsv(ignoreName);
 		gradeAssignment();
 		writeOutGradeCsv(outfileName);
 
@@ -58,6 +60,11 @@ public class PracticeItGrader {
 				"assignment with problem names CSV file path");
 		assignmentNameOption.setRequired(true);
 		options.addOption(assignmentNameOption);
+
+		Option ignoreNameOption = new Option("i", "ignoreCsv", true,
+				"A list of student userNames to ignore CSV file path");
+		//ignoreNameOption.setRequired(true);
+		options.addOption(ignoreNameOption);
 
 		Option outputFileOption = new Option("o", "outputCsv", true, "student grades output CSV file path");
 		outputFileOption.setRequired(true);
@@ -83,6 +90,7 @@ public class PracticeItGrader {
 		}
 	}
 
+	// https://www.callicoder.com/java-read-write-csv-file-apache-commons-csv/
 	private static void readInPracticeItCsv(String fileName) throws IOException {
 		try (Reader reader = Files.newBufferedReader(Paths.get(fileName));
 				CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader()
@@ -117,16 +125,35 @@ public class PracticeItGrader {
 		}
 	}
 
+	private static void readInIgnoreCsv(String fileName) throws IOException {
+		if(fileName == null) {
+			return;
+		}
+		try (Reader reader = Files.newBufferedReader(Paths.get(fileName));
+				CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
+						// .withFirstRecordAsHeader()
+						// .withIgnoreHeaderCase()
+						.withTrim());) {
+			// "userName"
+			for (CSVRecord csvRecord : csvParser) {
+				studentsToIgnore.add(csvRecord.get(0));
+			}
+			System.out.println("# Ignored Students = " + studentsToIgnore.size());
+		}
+	}
+
 	private static void writeOutGradeCsv(String fileName) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileName));
-
 				CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("FirstName", "LastName",
 						"NumCorrect", "NumIncorrect", "NumAttempted"));) {
 			System.out.println("Outputting file: " + fileName);
-			for (Object student : students.values()) {
-				csvPrinter.printRecord(((Student) student).firstName(), ((Student) student).lastName(),
-						((Student) student).numCorrect(), ((Student) student).numIncorrect(),
-						((Student) student).numAttempted());
+			for (Object studentObj : students.values()) {
+				Student student = (Student) studentObj;
+				String curUserName = student.userName();
+				if (!studentsToIgnore.contains(curUserName)) {
+					csvPrinter.printRecord(student.firstName(), student.lastName(), student.numCorrect(),
+							student.numIncorrect(), student.numAttempted());
+				}
 			}
 			csvPrinter.flush();
 		}
