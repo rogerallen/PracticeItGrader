@@ -27,6 +27,11 @@ Baker,Aleph,4,4,4
 Charlie,Parker,4,4,4
 Duck,Bill,8,0,8
 ```
+## Building
+
+I just used Eclipse and added the [commons-cli (v1.4)](https://www.apache.org/dist/commons/cli/binaries/) and [commons-csv (v1.5)](https://www.apache.org/dist/commons/csv/binaries/) JARs as Referenced Libraries.
+
+## License
 
 <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
   <a rel="license"
